@@ -1,1 +1,1 @@
-# greetin_kata_tdd
+# greeting_kata_tdd
