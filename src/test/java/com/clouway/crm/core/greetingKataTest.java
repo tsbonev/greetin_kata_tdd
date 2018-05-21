@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
@@ -67,7 +68,7 @@ public class greetingKataTest {
 
         String[] names = {"John", "Ann", "Leonard", "Chip"};
 
-        assertThat(greeter.greet(names), is("Hello, John, Ann, Leonard and Chip."));
+        assertThat(greeter.greet(names), is("Hello, John, Ann, Leonard, and Chip."));
 
     }
 
@@ -76,7 +77,7 @@ public class greetingKataTest {
 
         String[] names = {"JOHN", "ANN", "BOBBY"};
 
-        assertThat(greeter.greet(names), is("HELLO JOHN, ANN AND BOBBY!"));
+        assertThat(greeter.greet(names), is("HELLO JOHN, ANN, AND BOBBY!"));
 
     }
 
@@ -85,7 +86,25 @@ public class greetingKataTest {
 
         String[] names = {"John", "Ann", "LEONARD", "ROBERT", "Chip"};
 
-        assertThat(greeter.greet(names), is("Hello, John, Ann and Chip. AND HELLO LEONARD AND ROBERT!"));
+        assertThat(greeter.greet(names), is("Hello, John, Ann, and Chip. AND HELLO LEONARD AND ROBERT!"));
+
+    }
+
+    @Test
+    public void greetMultipleWithOneString(){
+
+        String[] names = {"John", "Shawn, Chip"};
+
+        assertThat(greeter.greet(names), is("Hello, John, Shawn, and Chip."));
+
+    }
+
+    @Test
+    public void escapeIntentionalCommas(){
+
+        String[] names = {"John", "\"Charlie, Diane\""};
+
+        assertThat(greeter.greet(names), is("Hello, John and Charlie, Diane."));
 
     }
 
@@ -95,6 +114,8 @@ public class greetingKataTest {
 
 
         public String greet(String[] names){
+
+            names = splitNames(names);
 
             StringBuilder builder = new StringBuilder();
 
@@ -134,7 +155,7 @@ public class greetingKataTest {
 
                 if(i < names.length - 1){
                     builder.append(names[i]);
-                    if(i == names.length - 2) builder.append(" ");
+                    if(names.length == 2) builder.append(" ");
                     else builder.append(", ");
                 }
                 else {
@@ -153,5 +174,21 @@ public class greetingKataTest {
             }
 
         }
+
+
+        private String[] splitNames(String[] names){
+
+            List<String> newNames = new ArrayList<>();
+
+            Arrays.stream(names)
+                    .forEach(s -> newNames
+                            .addAll(s.contains("\"") ?
+                                    Arrays.asList(s.replace("\"", "")) : Arrays.asList(s.split(", "))));
+
+            return newNames.stream().toArray(String[]::new);
+
+
+        }
+
     }
 }
